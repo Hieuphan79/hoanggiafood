@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kiểm tra vị trí</title>
+    <script>
+        function checkLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(success, error);
+            } else {
+                alert("Trình duyệt của bạn không hỗ trợ định vị địa lý.");
+            }
+        }
+
+        function success(position) {
+            const userLat = position.coords.latitude;
+            const userLon = position.coords.longitude;
+
+            // Tọa độ của quán ăn (Ví dụ tọa độ của quán ăn)
+            const storeLat = 10.78500683; // Latitude của quán (cập nhật theo vị trí của bạn)
+            const storeLon = 106.73167489; // Longitude của quán (cập nhật theo vị trí của bạn)
+            const radius = 0.02; // Bán kính quán (50m)
+
+            // Tính khoảng cách giữa người dùng và quán
+            const distance = calculateDistance(userLat, userLon, storeLat, storeLon);
+
+            if (distance <= radius) {
+                // Nếu khách trong quán, chuyển hướng đến Google Form
+                window.location.href = "https://docs.google.com/forms/d/e/1FAIpQLSezuftO1nlyIacRGfTzDTkJssOQLvmDMiXQLHA3EOCHbMnaIA/viewform?usp=sf_link";
+            } else {
+                // Nếu khách ngoài quán, hiển thị thông báo
+                document.getElementById("message").textContent = "Bạn không ở trong quán nên không thể gọi món.";
+            }
+        }
+
+        function error() {
+            alert("Không thể lấy được vị trí của bạn.");
+        }
+
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Bán kính Trái Đất tính bằng km
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a =
+                0.5 - Math.cos(dLat)/2 +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                (1 - Math.cos(dLon))/2;
+
+            return R * 2 * Math.asin(Math.sqrt(a)); // Trả về khoảng cách tính bằng km
+        }
+    </script>
+</head>
+<body onload="checkLocation()">
+    <h1>Gọi món</h1>
+    <p id="message">Đang kiểm tra vị trí của bạn...</p>
+</body>
+</html>
